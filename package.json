@@ -1,0 +1,37 @@
+{
+  "name": "acme-monorepo",
+  "private": true,
+  "packageManager": "pnpm@8.15.5",
+  "scripts": {
+    "dev": "pnpm --filter @acme/web dev",
+    "build": "pnpm --filter @acme/web build",
+    "lint": "pnpm exec eslint --ext .js,.jsx,.ts,.tsx --max-warnings=0 .",
+    "format": "pnpm exec prettier --check .",
+    "format:write": "pnpm exec prettier --write .",
+    "typecheck": "pnpm exec tsc --build --pretty false && pnpm --filter @acme/web run typecheck",
+    "prepare": "husky install"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.5",
+    "@types/react": "^18.2.65",
+    "@types/react-dom": "^18.2.21",
+    "@typescript-eslint/eslint-plugin": "^7.0.0",
+    "@typescript-eslint/parser": "^7.0.0",
+    "dotenv-flow": "^4.1.0",
+    "eslint": "^8.56.0",
+    "eslint-config-next": "^14.2.0",
+    "eslint-config-prettier": "^9.0.0",
+    "eslint-plugin-import": "^2.29.1",
+    "husky": "^9.0.7",
+    "lint-staged": "^15.2.2",
+    "prettier": "^3.2.5",
+    "typescript": "^5.4.5"
+  },
+  "lint-staged": {
+    "*.{ts,tsx,js,jsx}": [
+      "pnpm exec eslint --fix",
+      "pnpm exec prettier --write"
+    ],
+    "*.{json,md,css,scss,html}": "pnpm exec prettier --write"
+  }
+}
