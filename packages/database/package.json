@@ -6,9 +6,21 @@
   "types": "src/index.ts",
   "scripts": {
     "lint": "pnpm exec eslint --ext .ts src",
-    "typecheck": "pnpm exec tsc --project tsconfig.json"
+    "typecheck": "pnpm exec tsc --project tsconfig.json",
+    "prisma:generate": "pnpm exec prisma generate",
+    "prisma:migrate:dev": "pnpm exec prisma migrate dev",
+    "prisma:migrate:deploy": "pnpm exec prisma migrate deploy",
+    "db:seed": "pnpm exec prisma db seed"
   },
   "dependencies": {
-    "@acme/shared": "workspace:*"
+    "@acme/shared": "workspace:*",
+    "@prisma/client": "^5.18.0"
+  },
+  "devDependencies": {
+    "prisma": "^5.18.0",
+    "tsx": "^4.15.7"
+  },
+  "prisma": {
+    "seed": "pnpm exec tsx src/seed.ts"
   }
 }

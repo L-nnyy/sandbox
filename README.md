@@ -39,7 +39,11 @@ apps/
 packages/
   shared/       # Shared utilities (including environment helpers)
   ui/           # Reusable UI components
-  database/     # Database helpers and configuration
+  database/     # Database helpers and Prisma ORM client
 ```
+
+## Database layer
+
+This project standardises on **Prisma** as the ORM. Prisma offers a type-safe client that aligns with our TypeScript-first workflow, declarative schema modelling, and a migration engine that keeps every environment in sync without manual SQL drift. The generated client, schema, migrations, and seed scripts live in `@acme/database`, making the database layer accessible to every workspace package.
 
 Update or expand the packages as your project grows, and enjoy the shared tooling configured out of the box.
