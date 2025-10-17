@@ -1,0 +1,2 @@
+-- Use this file to seed your local development database.
+-- Add INSERT statements or copy data from fixtures as needed.

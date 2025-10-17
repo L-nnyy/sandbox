@@ -9,6 +9,10 @@
     "format": "pnpm exec prettier --check .",
     "format:write": "pnpm exec prettier --write .",
     "typecheck": "pnpm exec tsc --build --pretty false && pnpm --filter @acme/web run typecheck",
+    "dev:docker": "docker compose up web",
+    "dev:docker:detached": "docker compose up -d web",
+    "docker:down": "docker compose down",
+    "db:seed": "docker compose exec -T db psql -U postgres -d acme_dev -f /seed/base_seed.sql",
     "prepare": "husky install"
   },
   "devDependencies": {
