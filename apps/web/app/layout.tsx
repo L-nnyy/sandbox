@@ -3,17 +3,16 @@ import type { ReactNode } from 'react';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'ACME Web',
-  description: 'Starter application for the ACME monorepo',
+  title: 'Atelier de Travail · Identity System',
+  description:
+    'A warm, pedagogical design system inspired by workbooks, annotations, and the atelier de travail mindset.',
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="en">
-      <body className="min-h-screen bg-slate-50 font-sans text-slate-900 antialiased">
-        <main className="mx-auto flex w-full max-w-4xl flex-1 flex-col gap-6 p-6">
-          {children}
-        </main>
+    <html lang="en" suppressHydrationWarning>
+      <body className="min-h-screen bg-atelier-paper text-atelier-ink antialiased transition-colors dark:bg-atelier-night dark:text-atelier-parchment">
+        <main className="flex min-h-screen flex-col">{children}</main>
       </body>
     </html>
   );
