@@ -10,8 +10,6 @@ This repository is a pnpm-powered monorepo that houses a Next.js web application
    pnpm install
    ```
 
-   > When adding or updating dependencies, always commit the generated `pnpm-lock.yaml` so CI can reuse cached installs.
-
 2. Copy the example environment file and adjust the values to match your local setup:
 
    ```bash
