@@ -9,6 +9,7 @@
     "typecheck": "pnpm exec tsc --project tsconfig.json"
   },
   "dependencies": {
-    "dotenv-flow": "^4.1.0"
+    "dotenv-flow": "^4.1.0",
+    "zod": "^3.23.8"
   }
 }

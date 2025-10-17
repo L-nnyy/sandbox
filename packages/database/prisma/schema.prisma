@@ -1,0 +1,178 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADMIN
+  MENTOR
+  MEMBER
+}
+
+enum SessionStatus {
+  ACTIVE
+  COMPLETED
+  CANCELLED
+}
+
+enum MessageRole {
+  USER
+  ASSISTANT
+  SYSTEM
+}
+
+enum AttachmentType {
+  FILE
+  IMAGE
+  LINK
+}
+
+enum ParticipantRole {
+  HOST
+  FACILITATOR
+  MEMBER
+}
+
+enum EmbeddingProvider {
+  OPENAI
+  HUGGINGFACE
+  CUSTOM
+}
+
+model User {
+  id                  String               @id @default(uuid()) @map("id")
+  email               String               @unique @map("email")
+  name                String?              @map("name")
+  role                UserRole             @default(MEMBER) @map("role")
+  avatarUrl           String?              @map("avatar_url")
+  createdAt           DateTime             @default(now()) @map("created_at")
+  updatedAt           DateTime             @updatedAt @map("updated_at")
+  ownedSessions       Session[]            @relation("SessionOwner")
+  messages            Message[]
+  evaluations         Evaluation[]
+  sessionParticipants SessionParticipant[]
+
+  @@map("users")
+}
+
+model Session {
+  id          String               @id @default(uuid()) @map("id")
+  title       String               @map("title")
+  status      SessionStatus        @default(ACTIVE) @map("status")
+  ownerId     String               @map("owner_id")
+  startedAt   DateTime             @default(now()) @map("started_at")
+  endedAt     DateTime?            @map("ended_at")
+  metadata    Json?                @map("metadata")
+  createdAt   DateTime             @default(now()) @map("created_at")
+  updatedAt   DateTime             @updatedAt @map("updated_at")
+  owner       User                 @relation("SessionOwner", fields: [ownerId], references: [id])
+  messages    Message[]
+  participants SessionParticipant[]
+
+  @@map("sessions")
+  @@index([ownerId], map: "sessions_owner_id_idx")
+}
+
+model SessionParticipant {
+  id        Int             @id @default(autoincrement()) @map("id")
+  sessionId String          @map("session_id")
+  userId    String          @map("user_id")
+  role      ParticipantRole @default(MEMBER) @map("role")
+  joinedAt  DateTime        @default(now()) @map("joined_at")
+  session   Session         @relation(fields: [sessionId], references: [id])
+  user      User            @relation(fields: [userId], references: [id])
+
+  @@map("session_participants")
+  @@unique([sessionId, userId], map: "session_participants_session_id_user_id_key")
+  @@index([userId], map: "session_participants_user_id_idx")
+}
+
+model Message {
+  id         String        @id @default(uuid()) @map("id")
+  sessionId  String        @map("session_id")
+  authorId   String?       @map("author_id")
+  role       MessageRole   @map("role")
+  content    String        @map("content")
+  metadata   Json?         @map("metadata")
+  createdAt  DateTime      @default(now()) @map("created_at")
+  session    Session       @relation(fields: [sessionId], references: [id])
+  author     User?         @relation(fields: [authorId], references: [id])
+  attachments Attachment[]
+  embeddings Embedding[]
+  evaluations Evaluation[]
+
+  @@map("messages")
+  @@index([sessionId, createdAt], map: "messages_session_id_created_at_idx")
+}
+
+model Evaluation {
+  id          String   @id @default(uuid()) @map("id")
+  messageId   String   @map("message_id")
+  evaluatorId String?  @map("evaluator_id")
+  score       Float    @map("score")
+  label       String?  @map("label")
+  notes       String?  @map("notes")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  message     Message  @relation(fields: [messageId], references: [id])
+  evaluator   User?    @relation(fields: [evaluatorId], references: [id])
+
+  @@map("evaluations")
+  @@index([messageId], map: "evaluations_message_id_idx")
+}
+
+model Attachment {
+  id          String         @id @default(uuid()) @map("id")
+  messageId   String         @map("message_id")
+  type        AttachmentType @map("type")
+  url         String         @map("url")
+  title       String?        @map("title")
+  description String?        @map("description")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  message     Message        @relation(fields: [messageId], references: [id])
+
+  @@map("attachments")
+  @@index([messageId], map: "attachments_message_id_idx")
+}
+
+model Embedding {
+  id         String            @id @default(uuid()) @map("id")
+  messageId  String            @map("message_id")
+  provider   EmbeddingProvider @map("provider")
+  dimension  Int               @map("dimension")
+  vector     Float[]           @map("vector")
+  metadata   Json?             @map("metadata")
+  createdAt  DateTime          @default(now()) @map("created_at")
+  message    Message           @relation(fields: [messageId], references: [id])
+
+  @@map("embeddings")
+  @@index([messageId], map: "embeddings_message_id_idx")
+}
+
+model RncpTitle {
+  id        Int        @id @default(autoincrement()) @map("id")
+  code      String     @unique @map("code")
+  label     String     @map("label")
+  level     String?    @map("level")
+  active    Boolean    @default(true) @map("active")
+  expiresAt DateTime?  @map("expires_at")
+  createdAt DateTime   @default(now()) @map("created_at")
+  updatedAt DateTime   @updatedAt @map("updated_at")
+  reacCache ReacCache?
+
+  @@map("rncp_titles")
+}
+
+model ReacCache {
+  id           Int       @id @default(autoincrement()) @map("id")
+  rncpTitleId  Int       @unique @map("rncp_title_id")
+  payload      Json      @map("payload")
+  fetchedAt    DateTime  @default(now()) @map("fetched_at")
+  rncpTitle    RncpTitle @relation(fields: [rncpTitleId], references: [id])
+
+  @@map("reac_cache")
+}
